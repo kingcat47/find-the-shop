@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <style>
+      * {
+        text-align: center;
+      }
+
+      #board {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      /* 이모티콘을 넣으면 셀 비율이 깨져서 내가 조정했다 */
+      #board tr td {
+        border: 1px solid white;
+        background: #34da79;
+        width: 40px; /* 셀 크기 고정 */
+        height: 40px;
+        text-align: center;
+        font-size: 0; /* 기본 텍스트 크기 숨기기 */
+      }
+
+      #board tr td.clicked {
+        background: #6c5ee7;
+      }
+      /* 이모티콘을 넣으면 셀 비율이 깨져서 내가 조정했다 */
+      #board tr td.mine,
+      #board tr td.clim,
+      #board tr td.moneyevent {
+        font-size: 20px; /* 이모티콘 크기 조정 */
+      }
+      /* 상점색깔 */
+      #board tr td.mine {
+        background: #e1ff00;
+      }
+      /* 코인색깔 */
+      #board tr td.moneyevent {
+        background: #6c5ee7;
+      }
+      /* 폭탄색깔 */
+      #board tr td.clim {
+        background: #ff0000;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>편의점 찾기</h1>
+    <div>금액: <span id="money">10000</span></div>
+    <table id="board"></table>
+    <button onclick="genGrid();">새로운 게임</button>
+    <script>
+      let grid = document.getElementById("board");
+      genGrid();
+
+      function genGrid() {
+        grid.innerHTML = "";
+        for (let i = 0; i < 8; i++) {
+          let row = grid.insertRow(i);
+          for (let j = 0; j < 8; j++) {
+            let cell = row.insertCell(j);
+            cell.onclick = function () {
+              clickBox(this);
+            };
+            let mine = document.createAttribute("mine");
+            let monetevent = document.createAttribute("monetevent");
+            // 지뢰설정코드를 코인이냐 폭탄이냐코드로바꿈
+            if (Math.random() < 0.3) {
+              monetevent.value = "true";
+            } else {
+              monetevent.value = "false";
+            }
+            cell.setAttributeNode(mine);
+            cell.setAttributeNode(monetevent);
+          }
+        }
+
+        // 무작위로 한 셀을 선택하여 지뢰로 설정
+        let randomRow = Math.floor(Math.random() * 8);
+        let randomCol = Math.floor(Math.random() * 8);
+        let randomshop = grid.rows[randomRow].cells[randomCol];
+        randomshop.setAttribute("mine", "true");
+      }
+
+      function clickBox(cell) {
+        let money = document.getElementById("money");
+        let moneyValue = parseInt(money.innerHTML); // 금액을 숫자로 변환
+
+        if (cell.getAttribute("mine") == "true") {
+          //상점이라면
+          cell.className = "mine";
+          cell.innerHTML = "🏠";
+          if (moneyValue >= 1000) {
+            //돈이 천원이상이라면
+            money.innerHTML = moneyValue - 1000; // 금액 감소
+            alert("편의점 발견! 무사히 라면을 구입했습니다.");
+          } else {
+            alert("실패 ㅜㅜ 돈이 부족합니다.");
+          }
+        } else {
+          if (cell.getAttribute("monetevent") == "true") {
+            cell.className = "moneyevent";
+            cell.innerHTML = "🪙"; // 돈 이벤트 셀에 이모티콘 삽입
+            money.innerHTML = moneyValue + 300; // 금액 증가
+          } else {
+            cell.className = "clim";
+            cell.innerHTML = "💣"; //폭탄 이코티콘 삽입
+            if (moneyValue > 0) {
+              money.innerHTML = moneyValue - 1000; // 금액 감소
+            }
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
