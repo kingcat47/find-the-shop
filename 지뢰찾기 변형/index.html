@@ -14,10 +14,10 @@
       #board tr td {
         border: 1px solid white;
         background: #34da79;
-        width: 40px; /* 셀 크기 고정 */
+        width: 40px;
         height: 40px;
         text-align: center;
-        font-size: 0; /* 기본 텍스트 크기 숨기기 */
+        font-size: 0;
       }
 
       #board tr td.clicked {
@@ -27,8 +27,9 @@
       #board tr td.mine,
       #board tr td.clim,
       #board tr td.moneyevent {
-        font-size: 20px; /* 이모티콘 크기 조정 */
+        font-size: 20px;
       }
+
       /* 상점색깔 */
       #board tr td.mine {
         background: #e1ff00;
@@ -61,16 +62,10 @@
             cell.onclick = function () {
               clickBox(this);
             };
-            let mine = document.createAttribute("mine");
-            let monetevent = document.createAttribute("monetevent");
             // 지뢰설정코드를 코인이냐 폭탄이냐코드로바꿈
-            if (Math.random() < 0.3) {
-              monetevent.value = "true";
-            } else {
-              monetevent.value = "false";
-            }
-            cell.setAttributeNode(mine);
-            cell.setAttributeNode(monetevent);
+            let isMoneyEvent = Math.random() < 0.3;
+            cell.setAttribute("mine", "false");
+            cell.setAttribute("monetevent", isMoneyEvent ? "true" : "false"); // 머니이벤트가 참이면 트루 아니면 거짓을 넣음
           }
         }
 
@@ -79,6 +74,9 @@
         let randomCol = Math.floor(Math.random() * 8);
         let randomshop = grid.rows[randomRow].cells[randomCol];
         randomshop.setAttribute("mine", "true");
+
+        // 금액을 초기화
+        document.getElementById("money").innerHTML = "10000";
       }
 
       function clickBox(cell) {
@@ -103,7 +101,7 @@
             money.innerHTML = moneyValue + 300; // 금액 증가
           } else {
             cell.className = "clim";
-            cell.innerHTML = "💣"; //폭탄 이코티콘 삽입
+            cell.innerHTML = "💣"; // 폭탄 이모티콘 삽입
             if (moneyValue > 0) {
               money.innerHTML = moneyValue - 1000; // 금액 감소
             }
